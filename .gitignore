@@ -1,0 +1,45 @@
+# Entorno virtual
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# Archivos de configuración local
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+
+# Configuración de entorno y secretos
+*.env
+.env.*
+!.env.example
+
+# Archivos de logs
+*.log
+logs/
+debug.log
+
+# Archivos temporales o cache
+*.pot
+*.mo
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Archivos de compilación
+/staticfiles/
+media/
+node_modules/
+dist/
+build/
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
