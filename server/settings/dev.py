@@ -12,7 +12,6 @@ ALLOWED_HOSTS = ["*"]
 # ------------------------------------------------------------
 # BASE DE DATOS
 # ------------------------------------------------------------
-# En desarrollo, normalmente no forzamos SSL y usamos SQLite o Postgres local.
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
@@ -20,6 +19,7 @@ DATABASES = {
         ssl_require=True
     )
 }
+
 # ------------------------------------------------------------
 # CORS / CSRF
 # ------------------------------------------------------------

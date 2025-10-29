@@ -1,5 +1,4 @@
 from django.db import models
-
 from productos.models.ModeloFabricanteModel import ModeloFabricante
 
 class ProductoCompatibilidad(models.Model):

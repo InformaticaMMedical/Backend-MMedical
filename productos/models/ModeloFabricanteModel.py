@@ -1,5 +1,4 @@
 from django.db import models
-
 from productos.models.FabricanteModel import Fabricante
 
 class ModeloFabricante(models.Model):
