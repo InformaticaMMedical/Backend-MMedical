@@ -1,6 +1,7 @@
 from .base import *
 import dj_database_url
 import os
+from datetime import timedelta
 
 # ------------------------------------------------------------
 # CONFIGURACIÓN BÁSICA
@@ -76,3 +77,13 @@ LOGGING = {
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ------------------------------------------------------------
+# SUPABASE STORAGE
+# ------------------------------------------------------------
+SUPABASE_STORAGE_URL = os.getenv("SUPABASE_STORAGE_URL")
+SUPABASE_PUBLIC_BASE = os.getenv("SUPABASE_PUBLIC_BASE")
+SUPABASE_REGION = os.getenv("SUPABASE_REGION", "us-east-2")
+SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "imagenes")
+SUPABASE_ACCESS_KEY = os.getenv("SUPABASE_ACCESS_KEY")
+SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")

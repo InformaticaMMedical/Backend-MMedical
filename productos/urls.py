@@ -10,6 +10,12 @@ from productos.views.FabricanteView import FabricanteDetailAPIView, FabricanteLi
 from productos.views.ModeloFabricanteView import ModeloFabricanteDetailAPIView, ModeloFabricanteListCreateAPIView
 from productos.views.ProductoCompatibilidadView import ProductoCompatibilidadDetailAPIView, ProductoCompatibilidadListCreateAPIView
 
+from django.urls import path
+from productos.views.ImagenesProductoView import (
+    ImagenesProductoCollectionView,
+    ImagenProductoDetailView,
+)
+
 urlpatterns = [
     # Categorías
     path('categorias/', CategoriaListCreateAPIView.as_view(), name='categorias'),
@@ -46,4 +52,11 @@ urlpatterns = [
     # Modelos de fabricantes
     path("modelos/", ModeloFabricanteListCreateAPIView.as_view(), name="modelos-list"),
     path("modelos/<int:pk>/", ModeloFabricanteDetailAPIView.as_view(), name="modelos-detail"),
+
+
+    # Imagenes
+    path("productos/<int:producto_id>/imagenes/", ImagenesProductoCollectionView.as_view(), name="producto_imagenes"),
+    path("productos/imagenes/<int:imagen_id>/", ImagenProductoDetailView.as_view(), name="producto_imagen_detalle"),
+
+
 ]
