@@ -1,17 +1,24 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
-
+@method_decorator(csrf_exempt, name="dispatch")
 class CookieLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
+        print(f"Username: {username}")
         password = request.data.get("password")
+        print(f"Password: {password}")
         remember = request.data.get("remember", False)
+        print(f"Remember: {remember}")
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
+        print(f"Resultado authenticate(): {user}")
+
         if not user:
             return Response({"detail": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -31,16 +38,16 @@ class CookieLoginView(APIView):
             key="access_token",
             value=access_token,
             httponly=True,
-            secure=True,  # cambiar a False en local si no hay HTTPS
-            samesite="Lax",
+            secure=True,
+            samesite="None",
             max_age=access_age,
         )
         response.set_cookie(
             key="refresh_token",
             value=refresh_token,
             httponly=True,
-            secure=True,  # cambiar a False en local si no hay HTTPS
-            samesite="Lax",
+            secure=True,
+            samesite="None",
             max_age=refresh_age,
         )
 

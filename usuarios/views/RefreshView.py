@@ -22,7 +22,7 @@ class RefreshView(APIView):
             value=new_access_token,
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
             max_age=60 * 15,
         )
         return response

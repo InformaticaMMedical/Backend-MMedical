@@ -3,27 +3,41 @@ from productos.serializers.CategoriaSerializer import CategoriaSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from usuarios.authentication import CookieJWTAuthentication
 from utils.LogUtil import LogUtil
 
 class CategoriaListCreateAPIView(APIView):
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        usuario = request.user.username if hasattr(request.user, "username") else "Anónimo"
         categorias = Categoria.objects.all()
         serializer = CategoriaSerializer(categorias, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        usuario = request.user.username if hasattr(request.user, "username") else "Anónimo"
         serializer = CategoriaSerializer(data=request.data)
         if serializer.is_valid():
             categoria = serializer.save()
+
+            # DEBUG
+            print(f"Usuario autenticado: {request.user} (ID: {request.user.id})")
+            print("Cookies:", request.COOKIES)
+            print("Headers Authorization:", request.headers.get("Authorization"))
+
             LogUtil.registrar_log(
+                usuario=request.user,
                 accion="CREAR",
                 entidad="Categoria",
-                detalle=f"{usuario} creó la categoría '{categoria.nombre}'"
+                detalle=f"Se crea la categoría '{categoria.nombre}'"
             )
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class CategoriaDetailAPIView(APIView):
