@@ -7,8 +7,7 @@ from .ModelosModel import Modelo
 from .ImagenProductoModel import ImagenProducto
 
 # Fabricante
-from .FabricanteModel import Fabricante
-from .ModeloFabricanteModel import ModeloFabricante
+from .FabricanteModel import Fabricante, ModeloFabricante
 from .ProductoCompatibilidadModel import ProductoCompatibilidad
 
 # Registro

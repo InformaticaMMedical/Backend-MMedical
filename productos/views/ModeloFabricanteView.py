@@ -2,9 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from productos.models.FabricanteModel import ModeloFabricante
 from usuarios.authentication import CookieJWTAuthentication
-from productos.models.ModeloFabricanteModel import ModeloFabricante
-from productos.serializers.ModeloFabricanteSerializer import ModeloFabricanteSerializer
 from utils.LogUtil import LogUtil
 
 
@@ -19,7 +18,6 @@ class ModeloFabricanteListCreateAPIView(APIView):
         if fabricante_id:
             modelos = modelos.filter(fabricante_id=fabricante_id)
 
-        serializer = ModeloFabricanteSerializer(modelos, many=True)
 
         LogUtil.registrar_log(
             usuario=request.user,

@@ -2,6 +2,5 @@ from .AtributoSerializer import AtributoSerializer
 from .CategoriaSerializer import CategoriaSerializer
 from .ProveedorSerializer import ProveedorSerializer
 from .ValorAtributoSerializer import ValorAtributoProductoSerializer
-from .ModeloFabricanteSerializer import ModeloFabricanteSerializer
 from .ProductoCompatibilidadSerializer import ProductoCompatibilidadSerializer
 from .ProductoSerializer import ProductoSerializer

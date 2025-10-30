@@ -1,3 +1,11 @@
+####################################################################################################
+# Desarrollador:         Gonzalo Tapia
+# Fecha:                 30-10-2025
+# URL dev listado:       http:localhost:8000/productos/proveedores/
+# URL dev CRUD:          http:localhost:8000/productos/proveedores/<int:pk>/
+# URL prod:
+####################################################################################################
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
