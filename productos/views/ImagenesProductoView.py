@@ -15,7 +15,7 @@ class ImagenesProductoCollectionView(APIView):
 
     def get(self, request, producto_id: int):
         get_object_or_404(Producto, pk=producto_id)
-        qs = ImagenProducto.objects.filter(producto_id=producto_id).order_by("-created_at")
+        qs = ImagenProducto.objects.filter(producto_id=producto_id).order_by("-id")  # si no tienes created_at
         serializer = ImagenProductoSerializer(qs, many=True)
         return Response(serializer.data)
 
@@ -29,9 +29,7 @@ class ImagenesProductoCollectionView(APIView):
         if not desired_filename:
             return Response({"detail": "No se pudo determinar el nombre del archivo."}, status=status.HTTP_400_BAD_REQUEST)
 
-
         key = f"productos/{producto.id}/{desired_filename}"
-
 
         if ImagenProducto.objects.filter(producto=producto, filename=desired_filename).exists():
             return Response({"detail": "Ya existe una imagen con ese nombre en este producto."},
@@ -43,9 +41,10 @@ class ImagenesProductoCollectionView(APIView):
         except ClientError as e:
             return Response({"detail": f"Error subiendo a storage: {e}"}, status=status.HTTP_502_BAD_GATEWAY)
 
-        url = public_url_for_key(key)
-        obj = ImagenProducto.objects.create(producto=producto, filename=desired_filename, key=key, url=url)
-        return Response(ImagenProductoSerializer(obj).data, status=status.HTTP_201_CREATED)
+        obj = ImagenProducto.objects.create(producto=producto, filename=desired_filename, key=key)
+        data = ImagenProductoSerializer(obj).data
+        data["public_url"] = public_url_for_key(key)
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class ImagenProductoDetailView(APIView):
@@ -88,7 +87,8 @@ class ImagenProductoDetailView(APIView):
 
         img.filename = nuevo_filename
         img.key = new_key
-        img.url = public_url_for_key(new_key)
         img.save()
 
-        return Response(ImagenProductoSerializer(img).data)
+        data = ImagenProductoSerializer(img).data
+        data["public_url"] = public_url_for_key(new_key)
+        return Response(data)

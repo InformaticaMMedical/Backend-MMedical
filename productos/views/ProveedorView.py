@@ -1,11 +1,3 @@
-####################################################################################################
-# Desarrollador:         Gonzalo Tapia
-# Fecha:                 30-10-2025
-# URL dev listado:       http:localhost:8000/productos/proveedores/
-# URL dev CRUD:          http:localhost:8000/productos/proveedores/<int:pk>/
-# URL prod:
-####################################################################################################
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -17,11 +9,14 @@ from utils.LogUtil import LogUtil
 
 
 class ProveedorListCreateAPIView(APIView):
+    """
+    Listado y creación de proveedores.
+    """
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        proveedores = Proveedor.objects.all()
+        proveedores = Proveedor.objects.all().order_by("nombre")
         serializer = ProveedorSerializer(proveedores, many=True)
 
         LogUtil.registrar_log(
@@ -51,6 +46,9 @@ class ProveedorListCreateAPIView(APIView):
 
 
 class ProveedorDetailAPIView(APIView):
+    """
+    Consulta, edición y eliminación de un proveedor específico.
+    """
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -83,13 +81,13 @@ class ProveedorDetailAPIView(APIView):
 
         serializer = ProveedorSerializer(proveedor, data=request.data)
         if serializer.is_valid():
-            proveedor_actualizado = serializer.save()
+            actualizado = serializer.save()
 
             LogUtil.registrar_log(
                 usuario=request.user,
                 accion="EDITAR",
                 entidad="Proveedor",
-                detalle=f"Se actualiza el proveedor '{proveedor_actualizado.nombre}'"
+                detalle=f"Se actualiza el proveedor '{actualizado.nombre}'"
             )
 
             return Response(serializer.data)

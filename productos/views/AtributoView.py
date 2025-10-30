@@ -14,36 +14,25 @@ class AtributoListCreateAPIView(APIView):
 
     def get(self, request):
         categoria_id = request.query_params.get("categoria")
+        qs = Atributo.objects.all()
         if categoria_id:
-            atributos = Atributo.objects.filter(categorias__id=categoria_id)
-        else:
-            atributos = Atributo.objects.all()
-
-        serializer = AtributoSerializer(atributos, many=True)
-
+            qs = qs.filter(categorias__id=categoria_id)
+        serializer = AtributoSerializer(qs, many=True)
         LogUtil.registrar_log(
-            usuario=request.user,
-            accion="CONSULTAR",
-            entidad="Atributo",
-            detalle="Se consulta la lista de atributos"
+            usuario=request.user, accion="CONSULTAR",
+            entidad="Atributo", detalle="Se consulta la lista de atributos"
         )
-
         return Response(serializer.data)
 
     def post(self, request):
         serializer = AtributoSerializer(data=request.data)
         if serializer.is_valid():
-            atributo = serializer.save()
-
+            obj = serializer.save()
             LogUtil.registrar_log(
-                usuario=request.user,
-                accion="CREAR",
-                entidad="Atributo",
-                detalle=f"Se crea el atributo '{atributo.nombre}'"
+                usuario=request.user, accion="CREAR",
+                entidad="Atributo", detalle=f"Se crea el atributo '{obj.nombre}'"
             )
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -58,54 +47,38 @@ class AtributoDetailAPIView(APIView):
             return None
 
     def get(self, request, pk):
-        atributo = self.get_object(pk)
-        if not atributo:
+        obj = self.get_object(pk)
+        if not obj:
             return Response({"error": "Atributo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AtributoSerializer(atributo)
-
+        serializer = AtributoSerializer(obj)
         LogUtil.registrar_log(
-            usuario=request.user,
-            accion="CONSULTAR",
-            entidad="Atributo",
-            detalle=f"Se consulta el atributo '{atributo.nombre}'"
+            usuario=request.user, accion="CONSULTAR",
+            entidad="Atributo", detalle=f"Se consulta el atributo '{obj.nombre}'"
         )
-
         return Response(serializer.data)
 
     def put(self, request, pk):
-        atributo = self.get_object(pk)
-        if not atributo:
+        obj = self.get_object(pk)
+        if not obj:
             return Response({"error": "Atributo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AtributoSerializer(atributo, data=request.data)
+        serializer = AtributoSerializer(obj, data=request.data)
         if serializer.is_valid():
-            atributo_actualizado = serializer.save()
-
+            actualizado = serializer.save()
             LogUtil.registrar_log(
-                usuario=request.user,
-                accion="EDITAR",
-                entidad="Atributo",
-                detalle=f"Se actualiza el atributo '{atributo_actualizado.nombre}'"
+                usuario=request.user, accion="EDITAR",
+                entidad="Atributo", detalle=f"Se actualiza el atributo '{actualizado.nombre}'"
             )
-
             return Response(serializer.data)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        atributo = self.get_object(pk)
-        if not atributo:
+        obj = self.get_object(pk)
+        if not obj:
             return Response({"error": "Atributo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-
-        nombre_atributo = atributo.nombre
-        atributo.delete()
-
+        nombre = obj.nombre
+        obj.delete()
         LogUtil.registrar_log(
-            usuario=request.user,
-            accion="ELIMINAR",
-            entidad="Atributo",
-            detalle=f"Se elimina el atributo '{nombre_atributo}'"
+            usuario=request.user, accion="ELIMINAR",
+            entidad="Atributo", detalle=f"Se elimina el atributo '{nombre}'"
         )
-
         return Response(status=status.HTTP_204_NO_CONTENT)

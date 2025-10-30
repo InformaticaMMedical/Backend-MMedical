@@ -13,32 +13,21 @@ class ProductoCompatibilidadListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        compatibilidades = ProductoCompatibilidad.objects.select_related("producto", "modelo").all()
+        compatibilidades = ProductoCompatibilidad.objects.select_related("producto_principal", "producto_relacionado").all()
         serializer = ProductoCompatibilidadSerializer(compatibilidades, many=True)
-
-        LogUtil.registrar_log(
-            usuario=request.user,
-            accion="CONSULTAR",
-            entidad="ProductoCompatibilidad",
-            detalle="Se consulta la lista de compatibilidades de productos"
-        )
-
         return Response(serializer.data)
 
     def post(self, request):
         serializer = ProductoCompatibilidadSerializer(data=request.data)
         if serializer.is_valid():
-            compatibilidad = serializer.save()
-
+            compat = serializer.save()
             LogUtil.registrar_log(
                 usuario=request.user,
                 accion="CREAR",
                 entidad="ProductoCompatibilidad",
-                detalle=f"Se crea compatibilidad del producto '{compatibilidad.producto.nombre}' con modelo '{compatibilidad.modelo.nombre}'"
+                detalle=f"Se crea compatibilidad: {compat.producto_principal.nombre} ↔ {compat.producto_relacionado.nombre}"
             )
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,60 +37,44 @@ class ProductoCompatibilidadDetailAPIView(APIView):
 
     def get_object(self, pk):
         try:
-            return ProductoCompatibilidad.objects.select_related("producto", "modelo").get(pk=pk)
+            return ProductoCompatibilidad.objects.get(pk=pk)
         except ProductoCompatibilidad.DoesNotExist:
             return None
 
     def get(self, request, pk):
-        compatibilidad = self.get_object(pk)
-        if not compatibilidad:
+        compat = self.get_object(pk)
+        if not compat:
             return Response({"error": "Compatibilidad no encontrada"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductoCompatibilidadSerializer(compatibilidad)
-
-        LogUtil.registrar_log(
-            usuario=request.user,
-            accion="CONSULTAR",
-            entidad="ProductoCompatibilidad",
-            detalle=f"Se consulta compatibilidad del producto '{compatibilidad.producto.nombre}' con modelo '{compatibilidad.modelo.nombre}'"
-        )
-
+        serializer = ProductoCompatibilidadSerializer(compat)
         return Response(serializer.data)
 
     def put(self, request, pk):
-        compatibilidad = self.get_object(pk)
-        if not compatibilidad:
+        compat = self.get_object(pk)
+        if not compat:
             return Response({"error": "Compatibilidad no encontrada"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ProductoCompatibilidadSerializer(compatibilidad, data=request.data)
+        serializer = ProductoCompatibilidadSerializer(compat, data=request.data)
         if serializer.is_valid():
-            compatibilidad_actualizada = serializer.save()
-
+            actualizado = serializer.save()
             LogUtil.registrar_log(
                 usuario=request.user,
                 accion="EDITAR",
                 entidad="ProductoCompatibilidad",
-                detalle=f"Se actualiza compatibilidad del producto '{compatibilidad_actualizada.producto.nombre}' con modelo '{compatibilidad_actualizada.modelo.nombre}'"
+                detalle=f"Se actualiza compatibilidad: {actualizado.producto_principal.nombre} ↔ {actualizado.producto_relacionado.nombre}"
             )
-
             return Response(serializer.data)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        compatibilidad = self.get_object(pk)
-        if not compatibilidad:
+        compat = self.get_object(pk)
+        if not compat:
             return Response({"error": "Compatibilidad no encontrada"}, status=status.HTTP_404_NOT_FOUND)
-
-        producto_nombre = compatibilidad.producto.nombre
-        modelo_nombre = compatibilidad.modelo.nombre
-        compatibilidad.delete()
-
+        nombre_a = compat.producto_principal.nombre
+        nombre_b = compat.producto_relacionado.nombre
+        compat.delete()
         LogUtil.registrar_log(
             usuario=request.user,
             accion="ELIMINAR",
             entidad="ProductoCompatibilidad",
-            detalle=f"Se elimina compatibilidad entre producto '{producto_nombre}' y modelo '{modelo_nombre}'"
+            detalle=f"Se elimina compatibilidad entre '{nombre_a}' y '{nombre_b}'"
         )
-
         return Response(status=status.HTTP_204_NO_CONTENT)

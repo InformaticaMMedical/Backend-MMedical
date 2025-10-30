@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Atributo
+from productos.models.AtributoModel import Atributo
 
 class AtributoSerializer(serializers.ModelSerializer):
     class Meta:

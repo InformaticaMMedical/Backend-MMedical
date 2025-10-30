@@ -2,8 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from productos.models.FabricanteModel import ModeloFabricante
 from usuarios.authentication import CookieJWTAuthentication
+from productos.models.FabricanteModel import ModeloFabricante
+from productos.serializers.FabricanteSerializer import ModeloFabricanteSerializer
 from utils.LogUtil import LogUtil
 
 
@@ -18,12 +19,13 @@ class ModeloFabricanteListCreateAPIView(APIView):
         if fabricante_id:
             modelos = modelos.filter(fabricante_id=fabricante_id)
 
+        serializer = ModeloFabricanteSerializer(modelos, many=True)
 
         LogUtil.registrar_log(
             usuario=request.user,
             accion="CONSULTAR",
             entidad="ModeloFabricante",
-            detalle=f"Se consulta la lista de modelos de fabricante (filtro={fabricante_id or 'todos'})"
+            detalle=f"Se consulta la lista de modelos (filtro fabricante={fabricante_id or 'todos'})"
         )
 
         return Response(serializer.data)
@@ -61,7 +63,6 @@ class ModeloFabricanteDetailAPIView(APIView):
             return Response({"error": "Modelo de fabricante no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = ModeloFabricanteSerializer(modelo)
-
         LogUtil.registrar_log(
             usuario=request.user,
             accion="CONSULTAR",
@@ -78,15 +79,13 @@ class ModeloFabricanteDetailAPIView(APIView):
 
         serializer = ModeloFabricanteSerializer(modelo, data=request.data)
         if serializer.is_valid():
-            modelo_actualizado = serializer.save()
-
+            actualizado = serializer.save()
             LogUtil.registrar_log(
                 usuario=request.user,
                 accion="EDITAR",
                 entidad="ModeloFabricante",
-                detalle=f"Se actualiza el modelo '{modelo_actualizado.nombre}' del fabricante '{modelo_actualizado.fabricante.nombre}'"
+                detalle=f"Se actualiza el modelo '{actualizado.nombre}' del fabricante '{actualizado.fabricante.nombre}'"
             )
-
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

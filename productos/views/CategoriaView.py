@@ -21,16 +21,13 @@ class CategoriaListCreateAPIView(APIView):
         serializer = CategoriaSerializer(data=request.data)
         if serializer.is_valid():
             categoria = serializer.save()
-
             LogUtil.registrar_log(
                 usuario=request.user,
                 accion="CREAR",
                 entidad="Categoria",
                 detalle=f"Se crea la categoría '{categoria.nombre}'"
             )
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -50,14 +47,6 @@ class CategoriaDetailAPIView(APIView):
             return Response({"error": "Categoría no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = CategoriaSerializer(categoria)
-
-        LogUtil.registrar_log(
-            usuario=request.user,
-            accion="CONSULTAR",
-            entidad="Categoria",
-            detalle=f"Se consulta la categoría '{categoria.nombre}'"
-        )
-
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -68,14 +57,12 @@ class CategoriaDetailAPIView(APIView):
         serializer = CategoriaSerializer(categoria, data=request.data)
         if serializer.is_valid():
             categoria_actualizada = serializer.save()
-
             LogUtil.registrar_log(
                 usuario=request.user,
                 accion="EDITAR",
                 entidad="Categoria",
                 detalle=f"Se actualiza la categoría '{categoria_actualizada.nombre}'"
             )
-
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -86,12 +73,10 @@ class CategoriaDetailAPIView(APIView):
 
         nombre_categoria = categoria.nombre
         categoria.delete()
-
         LogUtil.registrar_log(
             usuario=request.user,
             accion="ELIMINAR",
             entidad="Categoria",
             detalle=f"Se elimina la categoría '{nombre_categoria}'"
         )
-
         return Response(status=status.HTTP_204_NO_CONTENT)
