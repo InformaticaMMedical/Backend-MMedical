@@ -1,7 +1,7 @@
 from django.db import models
 
 class Categoria(models.Model):
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100, blank=True)
     tipo_atributo = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
