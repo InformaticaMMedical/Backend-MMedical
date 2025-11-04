@@ -13,17 +13,14 @@ from productos.views.FabricanteView import FabricanteListCreateAPIView, Fabrican
 from productos.views.ModeloFabricanteView import ModeloFabricanteListCreateAPIView, ModeloFabricanteDetailAPIView
 
 # Imágenes
-from productos.views.ImagenesProductoView import (
-    ImagenesProductoCollectionView,
-    ImagenProductoDetailView,
-)
+from productos.views.ImagenesProductoView import (ImagenesProductoCollectionView, ImagenProductoDetailView,)
 
 urlpatterns = [
-    # Categorías
+    # Categorías    
     path('categorias/', CategoriaListCreateAPIView.as_view(), name='categorias-list'),
     path('categorias/<int:pk>/', CategoriaDetailAPIView.as_view(), name='categorias-detail'),
 
-    # Proveedores
+    # Proveedor
     path('proveedores/', ProveedorListCreateAPIView.as_view(), name='proveedores-list'),
     path('proveedores/<int:pk>/', ProveedorDetailAPIView.as_view(), name='proveedores-detail'),
 
@@ -31,7 +28,7 @@ urlpatterns = [
     path('atributos/', AtributoListCreateAPIView.as_view(), name='atributos-list'),
     path('atributos/<int:pk>/', AtributoDetailAPIView.as_view(), name='atributos-detail'),
 
-    # Valores de Atributo
+    # Valor Atributo
     path('atributos/valores/', ValorAtributoProductoListCreateAPIView.as_view(), name='atributos-valores-list'),
     path('atributos/valores/<int:pk>/', ValorAtributoProductoDetailAPIView.as_view(), name='atributos-valores-detail'),
 
@@ -43,15 +40,15 @@ urlpatterns = [
     path('fabricantes/', FabricanteListCreateAPIView.as_view(), name='fabricantes-list'),
     path('fabricantes/<int:pk>/', FabricanteDetailAPIView.as_view(), name='fabricantes-detail'),
 
-    # Modelos de Fabricante
+    # Modelo Fabricante
     path('modelos-fabricante/', ModeloFabricanteListCreateAPIView.as_view(), name='modelos-fabricante-list'),
     path('modelos-fabricante/<int:pk>/', ModeloFabricanteDetailAPIView.as_view(), name='modelos-fabricante-detail'),
 
-    # Compatibilidad de Productos
+    # Compatibilidad
     path('compatibilidades/', ProductoCompatibilidadListCreateAPIView.as_view(), name='compatibilidades-list'),
     path('compatibilidades/<int:pk>/', ProductoCompatibilidadDetailAPIView.as_view(), name='compatibilidades-detail'),
 
-    # Imágenes de Producto
+    # Imagen
     path('productos/<int:producto_id>/imagenes/', ImagenesProductoCollectionView.as_view(), name='imagenes-producto-list'),
     path('imagenes/<int:imagen_id>/', ImagenProductoDetailView.as_view(), name='imagenes-producto-detail'),
 ]

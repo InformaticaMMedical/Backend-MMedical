@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from productos.models.ProductoModel import Producto
+from productos.models.ProductoCompatibilidadModel import ProductoCompatibilidad 
+from productos.models.ValorAtributoModel import ValorAtributoProducto 
 from productos.serializers.CategoriaSerializer import CategoriaSerializer
 from productos.serializers.ProveedorSerializer import ProveedorSerializer
 from productos.serializers.ImagenProductoSerializer import ImagenProductoSerializer
@@ -13,6 +15,10 @@ class ProductoSerializer(serializers.ModelSerializer):
     modelo_fabricante_detalle = ModeloFabricanteSerializer(source="modelo_fabricante", read_only=True)
     imagenes = ImagenProductoSerializer(many=True, read_only=True)
     valores_atributo = ValorAtributoProductoSerializer(many=True, read_only=True)
+
+    atributos = serializers.ListField(write_only=True, required=False)
+    modelos = serializers.ListField(child=serializers.IntegerField(), write_only=True, required=False)
+    fabricante = serializers.IntegerField(write_only=True, required=False, allow_null=True)
 
     class Meta:
         model = Producto
@@ -28,4 +34,29 @@ class ProductoSerializer(serializers.ModelSerializer):
             "modelo_fabricante_detalle",
             "imagenes",
             "valores_atributo",
+            "fabricante",
+            "modelos",  
+            "atributos",
         ]
+
+    def create(self, validated_data):
+        atributos_data = validated_data.pop('atributos', [])
+        modelos_data = validated_data.pop('modelos', [])
+        fabricante_id = validated_data.pop('fabricante', None)
+
+        producto = Producto.objects.create(**validated_data)
+        if fabricante_id:
+            producto.modelo_fabricante_id = fabricante_id
+            producto.save()
+
+        for modelo_id in modelos_data:
+            ProductoCompatibilidad.objects.create(producto=producto, modelo_id=modelo_id)
+
+        for attr in atributos_data:
+            ValorAtributoProducto.objects.create(
+                producto=producto,
+                atributo_id=attr.get("atributo_id"),
+                valor=attr.get("valor", "")
+            )
+
+        return producto
