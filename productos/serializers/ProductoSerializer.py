@@ -2,6 +2,7 @@ from rest_framework import serializers
 from productos.models.ProductoModel import Producto
 from productos.models.ProductoCompatibilidadModel import ProductoCompatibilidad 
 from productos.models.ValorAtributoModel import ValorAtributoProducto 
+from productos.models.FabricanteModel import ModeloFabricante
 from productos.serializers.CategoriaSerializer import CategoriaSerializer
 from productos.serializers.ProveedorSerializer import ProveedorSerializer
 from productos.serializers.ImagenProductoSerializer import ImagenProductoSerializer
@@ -35,7 +36,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "imagenes",
             "valores_atributo",
             "fabricante",
-            "modelos",  
+            "modelos",
             "atributos",
         ]
 
@@ -43,20 +44,33 @@ class ProductoSerializer(serializers.ModelSerializer):
         atributos_data = validated_data.pop('atributos', [])
         modelos_data = validated_data.pop('modelos', [])
         fabricante_id = validated_data.pop('fabricante', None)
+        proveedores_data = validated_data.pop('proveedores', [])
 
+        # Crear producto sin los M2M
         producto = Producto.objects.create(**validated_data)
-        if fabricante_id:
-            producto.modelo_fabricante_id = fabricante_id
-            producto.save()
 
+        # Asignar fabricante si existe y es válido
+        if fabricante_id:
+            if ModeloFabricante.objects.filter(id=fabricante_id).exists():
+                producto.modelo_fabricante_id = fabricante_id
+                producto.save()
+            else:
+                print(f"⚠️ ModeloFabricante con id={fabricante_id} no existe, se omite asignación.")
+
+        # Asignar proveedores (ManyToMany)
+        if proveedores_data:
+            producto.proveedores.set(proveedores_data)
+
+        # Crear compatibilidades
         for modelo_id in modelos_data:
             ProductoCompatibilidad.objects.create(producto=producto, modelo_id=modelo_id)
 
+        # Crear valores de atributos (adaptado a tu modelo)
         for attr in atributos_data:
             ValorAtributoProducto.objects.create(
                 producto=producto,
-                atributo_id=attr.get("atributo_id"),
-                valor=attr.get("valor", "")
+                key=attr.get("key", ""),      
+                filename=attr.get("filename", "") 
             )
 
         return producto

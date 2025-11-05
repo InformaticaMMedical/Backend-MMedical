@@ -23,20 +23,21 @@ DATABASES = {
 # ------------------------------------------------------------
 # CORS / CSRF
 # ------------------------------------------------------------
-# Permitir peticiones desde el frontend de desarrollo (React + Vite)
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Vite
-    "http://127.0.0.1:5173",  # a veces Vite usa esta URL
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
-# O, si quieres permitir todo (solo en desarrollo)
-CORS_ALLOW_ALL_ORIGINS = True
-
-# Para que las peticiones con token funcionen bien
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
 # ------------------------------------------------------------
-# REST FRAMEWORK + JWT (por claridad)
+# REST FRAMEWORK + JWT
 # ------------------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -57,7 +58,7 @@ SIMPLE_JWT = {
 }
 
 # ------------------------------------------------------------
-# LOGGING (opcional, útil en dev)
+# LOGGING
 # ------------------------------------------------------------
 LOGGING = {
     'version': 1,
@@ -72,7 +73,7 @@ LOGGING = {
 }
 
 # ------------------------------------------------------------
-# ARCHIVOS ESTÁTICOS (para servir en dev)
+# ARCHIVOS ESTÁTICOS / MEDIA
 # ------------------------------------------------------------
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
