@@ -1,26 +1,35 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.utils import timezone
+from usuarios.models import registrar_actividad_usuario
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CookieLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
-        print(f"Username: {username}")
         password = request.data.get("password")
-        print(f"Password: {password}")
         remember = request.data.get("remember", False)
-        print(f"Remember: {remember}")
 
         user = authenticate(request, username=username, password=password)
-        print(f"Resultado authenticate(): {user}")
 
         if not user:
-            return Response({"detail": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"detail": "Credenciales inválidas"}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        login(request, user)
+
+        perfil = user.perfil
+        perfil.ultima_sesion = timezone.now()
+        perfil.save()
+
+        registrar_actividad_usuario(user)
 
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
@@ -33,6 +42,7 @@ class CookieLoginView(APIView):
             "message": "Login exitoso",
             "user": {"id": user.id, "username": user.username, "email": user.email},
         })
+
 
         response.set_cookie(
             key="access_token",

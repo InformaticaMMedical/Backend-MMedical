@@ -23,4 +23,5 @@ urlpatterns = [
     path('usuarios/', include("usuarios.urls")),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('usuarios/', include('usuarios.urls')),
 ]
