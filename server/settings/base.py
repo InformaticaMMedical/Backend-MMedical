@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     # Apps propias
     'productos',
     'usuarios',
+    'ventas',
+    "utils",
 
     # Terceros
     'rest_framework',
