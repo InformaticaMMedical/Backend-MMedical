@@ -1,5 +1,5 @@
 from django.urls import path
-from ventas.views.cotizacion_views import (CrearCotizacionAPIView, AgregarItemAPIView, ObtenerCotizacionAPIView)
+from ventas.views.cotizacion_views import (CrearCotizacionAPIView, AgregarItemAPIView, ObtenerCotizacionAPIView,)
 
 urlpatterns = [
     path("crear/", CrearCotizacionAPIView.as_view()),

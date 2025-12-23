@@ -1,12 +1,20 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import AllowAny
+
 from ventas.models.models import Cotizacion, CotizacionItem
-from ventas.serializers.serializers import ( CotizacionSerializer, CotizacionItemSerializer)
+from ventas.serializers.serializers import (
+    CotizacionSerializer,
+    CotizacionItemSerializer
+)
 from productos.models import Producto
 
 
 class CrearCotizacionAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
     def post(self, request):
         cotizacion = Cotizacion.objects.create(
             cliente_nombre=request.data.get("cliente_nombre", ""),
@@ -14,16 +22,16 @@ class CrearCotizacionAPIView(APIView):
             cliente_empresa=request.data.get("cliente_empresa", "")
         )
 
-        # 👇 CLAVE: devolver "id"
         return Response(
-            {
-                "id": cotizacion.id
-            },
+            {"id": cotizacion.id},
             status=status.HTTP_201_CREATED
         )
 
 
 class AgregarItemAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
     def post(self, request, cotizacion_id):
         try:
             cotizacion = Cotizacion.objects.get(id=cotizacion_id)
@@ -35,6 +43,12 @@ class AgregarItemAPIView(APIView):
 
         producto_id = request.data.get("producto_id")
         cantidad = request.data.get("cantidad", 1)
+
+        if not producto_id:
+            return Response(
+                {"error": "producto_id es requerido"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             producto = Producto.objects.get(id=producto_id)
@@ -50,6 +64,8 @@ class AgregarItemAPIView(APIView):
             cantidad=cantidad
         )
 
+        print("ITEM CREADO:", item.id)
+
         return Response(
             CotizacionItemSerializer(item).data,
             status=status.HTTP_201_CREATED
@@ -57,13 +73,23 @@ class AgregarItemAPIView(APIView):
 
 
 class ObtenerCotizacionAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
     def get(self, request, cotizacion_id):
         try:
-            cotizacion = Cotizacion.objects.get(id=cotizacion_id)
+            cotizacion = (
+                Cotizacion.objects
+                .prefetch_related("items")
+                .get(id=cotizacion_id)
+            )
         except Cotizacion.DoesNotExist:
             return Response(
                 {"error": "No existe"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        return Response(CotizacionSerializer(cotizacion).data)
+        return Response(
+            CotizacionSerializer(cotizacion).data,
+            status=status.HTTP_200_OK
+        )

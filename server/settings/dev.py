@@ -9,6 +9,8 @@ from datetime import timedelta
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
+APPEND_SLASH = True
+
 # ------------------------------------------------------------
 # BASE DE DATOS
 # ------------------------------------------------------------
