@@ -3,9 +3,14 @@ from ventas.models.models import Cotizacion, CotizacionItem
 
 
 class CotizacionItemSerializer(serializers.ModelSerializer):
+    producto_nombre = serializers.CharField(
+        source="producto.nombre",
+        read_only=True
+    )
+
     class Meta:
         model = CotizacionItem
-        fields = ['id', 'producto', 'cantidad']
+        fields = ['id', 'producto', 'producto_nombre', 'cantidad']
 
 
 class CotizacionSerializer(serializers.ModelSerializer):
