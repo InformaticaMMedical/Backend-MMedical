@@ -23,6 +23,13 @@ class CotizacionSerializer(serializers.ModelSerializer):
             'cliente_nombre',
             'cliente_email',
             'cliente_empresa',
+            'cliente_rut',
+            'region',
+            'comuna',
+            'direccion',
+            'telefono',
+            'plazo_entrega',
+            'comentarios',
             'fecha_creacion',
             'enviada',
             'items'

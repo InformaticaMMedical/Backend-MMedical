@@ -19,7 +19,15 @@ class CrearCotizacionAPIView(APIView):
         cotizacion = Cotizacion.objects.create(
             cliente_nombre=request.data.get("cliente_nombre", ""),
             cliente_email=request.data.get("cliente_email", ""),
-            cliente_empresa=request.data.get("cliente_empresa", "")
+            cliente_empresa=request.data.get("cliente_empresa", ""),
+            cliente_rut=request.data.get("cliente_rut", ""),
+            region=request.data.get("region", ""),
+            comuna=request.data.get("comuna", ""),
+            direccion=request.data.get("direccion", ""),
+            telefono=request.data.get("telefono", ""),
+            plazo_entrega=request.data.get("plazo_entrega", ""),
+            comentarios=request.data.get("comentarios", ""),
+            enviada=True
         )
 
         return Response(
@@ -64,8 +72,6 @@ class AgregarItemAPIView(APIView):
             cantidad=cantidad
         )
 
-        print("ITEM CREADO:", item.id)
-
         return Response(
             CotizacionItemSerializer(item).data,
             status=status.HTTP_201_CREATED
@@ -92,4 +98,53 @@ class ObtenerCotizacionAPIView(APIView):
         return Response(
             CotizacionSerializer(cotizacion).data,
             status=status.HTTP_200_OK
+        )
+
+class ActualizarItemCotizacionAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def patch(self, request, item_id):
+        try:
+            item = CotizacionItem.objects.get(id=item_id)
+        except CotizacionItem.DoesNotExist:
+            return Response(
+                {"error": "Item no existe"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        cantidad = request.data.get("cantidad")
+
+        if not cantidad or int(cantidad) < 1:
+            return Response(
+                {"error": "Cantidad inválida"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        item.cantidad = int(cantidad)
+        item.save()
+
+        return Response(
+            CotizacionItemSerializer(item).data,
+            status=status.HTTP_200_OK
+        )
+
+class EliminarItemCotizacionAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def delete(self, request, item_id):
+        try:
+            item = CotizacionItem.objects.get(id=item_id)
+        except CotizacionItem.DoesNotExist:
+            return Response(
+                {"error": "Item no existe"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        item.delete()
+
+        return Response(
+            {"message": "Item eliminado correctamente"},
+            status=status.HTTP_204_NO_CONTENT
         )
