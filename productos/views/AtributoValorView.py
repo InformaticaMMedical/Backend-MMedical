@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from usuarios.authentication import CookieJWTAuthentication
-from productos.models.ValorAtributoModel import ValorAtributoProducto
+from productos.models.ValorAtributoProductoModel import ValorAtributoProducto
 from productos.serializers.ValorAtributoSerializer import ValorAtributoProductoSerializer
 from utils.LogUtil import LogUtil
 

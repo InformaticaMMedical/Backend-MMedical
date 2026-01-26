@@ -7,6 +7,8 @@ from productos.views.CategoriaView import CategoriaListCreateAPIView, CategoriaD
 from productos.views.ProveedorView import ProveedorListCreateAPIView, ProveedorDetailAPIView
 from productos.views.ProductoView import ProductoListCreateAPIView, ProductoDetailAPIView
 from productos.views.ProductoCompatibilidadView import ProductoCompatibilidadListCreateAPIView, ProductoCompatibilidadDetailAPIView
+from productos.views.PublicProductoView import (PublicProductoListAPIView, PublicProductoDetailAPIView )
+from productos.views.PublicProductoCategoriaView import PublicProductoPorCategoriaAPIView
 
 # Fabricantes y modelos
 from productos.views.FabricanteView import FabricanteListCreateAPIView, FabricanteDetailAPIView
@@ -36,6 +38,9 @@ urlpatterns = [
     path('productos/', ProductoListCreateAPIView.as_view(), name='productos-list'),
     path('productos/<int:pk>/', ProductoDetailAPIView.as_view(), name='productos-detail'),
 
+    path("public/productos/", PublicProductoListAPIView.as_view(), name="public-productos"),
+    path("public/productos/<int:pk>/", PublicProductoDetailAPIView.as_view(), name="public-producto-detail"),
+
     # Fabricantes
     path('fabricantes/', FabricanteListCreateAPIView.as_view(), name='fabricantes-list'),
     path('fabricantes/<int:pk>/', FabricanteDetailAPIView.as_view(), name='fabricantes-detail'),
@@ -51,4 +56,11 @@ urlpatterns = [
     # Imagen
     path('productos/<int:producto_id>/imagenes/', ImagenesProductoCollectionView.as_view(), name='imagenes-producto-list'),
     path('imagenes/<int:imagen_id>/', ImagenProductoDetailView.as_view(), name='imagenes-producto-detail'),
+
+    path(
+    "public/productos/categoria/<str:categoria_nombre>/",
+    PublicProductoPorCategoriaAPIView.as_view(),
+    name="public-productos-por-categoria"
+),
+
 ]
